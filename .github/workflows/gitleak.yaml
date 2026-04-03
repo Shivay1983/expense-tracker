@@ -1,0 +1,38 @@
+name: Gitleaks Secret Scan
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Gitleaks and Write Summary
+        run: |
+          set +e
+          gitleaks detect --source . \
+            --exit-code 1 \
+            --report-format json \
+            --report-path gitleaks-report.json \
+            --redact
+          EXIT_CODE=$?
+
+          echo "## 🔒 GitLeaks Scan Results" >> $GITHUB_STEP_SUMMARY
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "**❌ Secrets detected!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Findings by Category" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Group findings by RuleID (API keys, tokens, etc.)
+            jq -r '.findings[] | "- **" + .RuleID + "** → " + .File + ":" + (.StartLine|tostring)' gitleaks-report.json >> $GITHUB_STEP_SUMMARY
+
+            exit $EXIT_CODE
+          else
+            echo "✅ No secrets, API keys, or tokens detected." >> $GITHUB_STEP_SUMMARY
+          fi
