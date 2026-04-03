@@ -7,7 +7,7 @@ on:
 
 jobs:
   gitleaks:
-    runs-on: DESKTOP-V68ATK4
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
