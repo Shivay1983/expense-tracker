@@ -1,0 +1,10 @@
+#.pre-commit-config.yaml 
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+        args: ["--verbose", "--redact"]
+
+        ## --verbose: Gives detailed output.
+        ## --redact: Masks detected secrets in logs so they aren’t exposed further.
