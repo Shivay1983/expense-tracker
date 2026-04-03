@@ -6,5 +6,6 @@ repos:
       - id: gitleaks
         args: ["--verbose", "--redact"]
 
+
         ## --verbose: Gives detailed output.
         ## --redact: Masks detected secrets in logs so they aren’t exposed further.
